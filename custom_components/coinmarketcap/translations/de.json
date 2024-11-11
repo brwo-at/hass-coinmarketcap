@@ -13,8 +13,6 @@
         "description": "Wählen Sie die Kryptowährungen aus, die Sie verfolgen möchten",
         "data": {
           "cryptocurrencies": "Kryptowährungen",
-          "currency": "Währung",
-          "scan_interval": "Aktualisierungsintervall (Sekunden)",
           "add_custom": "Benutzerdefinierte Kryptowährung hinzufügen"
         }
       },
@@ -24,6 +22,14 @@
         "data": {
           "symbol": "Kryptowährungssymbol"
         }
+      },
+      "coin_amounts": {
+        "title": "Coin-Mengen eingeben",
+        "description": "Geben Sie die Menge jeder Kryptowährung an, die Sie besitzen",
+        "data": {
+          "currency": "Währung",
+          "scan_interval": "Aktualisierungsintervall (Sekunden)"
+        }
       }
     },
     "error": {
@@ -31,7 +37,8 @@
       "invalid_auth": "Ungültiger API-Schlüssel",
       "invalid_cryptocurrency": "Ungültiges Kryptowährungssymbol",
       "no_cryptocurrencies": "Bitte wählen Sie mindestens eine Kryptowährung aus",
-      "unknown": "Ein unerwarteter Fehler ist aufgetreten"
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten",
+      "invalid_input": "Ungültige Eingabe. Bitte überprüfen Sie alle Felder."
     },
     "abort": {
       "already_configured": "CoinMarketCap ist bereits konfiguriert"
@@ -44,8 +51,6 @@
         "description": "Aktualisieren Sie Ihre CoinMarketCap-Einstellungen",
         "data": {
           "cryptocurrencies": "Kryptowährungen",
-          "currency": "Währung",
-          "scan_interval": "Aktualisierungsintervall (Sekunden)",
           "add_custom": "Benutzerdefinierte Kryptowährung hinzufügen"
         }
       },
@@ -55,13 +60,22 @@
         "data": {
           "symbol": "Kryptowährungssymbol"
         }
+      },
+      "coin_amounts": {
+        "title": "Coin-Mengen aktualisieren",
+        "description": "Aktualisieren Sie die Menge jeder Kryptowährung, die Sie besitzen",
+        "data": {
+          "currency": "Währung",
+          "scan_interval": "Aktualisierungsintervall (Sekunden)"
+        }
       }
     },
     "error": {
       "cannot_connect": "Verbindung zur CoinMarketCap API fehlgeschlagen",
       "invalid_cryptocurrency": "Ungültiges Kryptowährungssymbol",
       "no_cryptocurrencies": "Bitte wählen Sie mindestens eine Kryptowährung aus",
-      "unknown": "Ein unerwarteter Fehler ist aufgetreten"
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten",
+      "invalid_input": "Ungültige Eingabe. Bitte überprüfen Sie alle Felder."
     }
   }
 }

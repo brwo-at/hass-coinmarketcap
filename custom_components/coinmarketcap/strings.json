@@ -13,8 +13,6 @@
         "description": "Choose the cryptocurrencies you want to track",
         "data": {
           "cryptocurrencies": "Cryptocurrencies",
-          "currency": "Currency",
-          "scan_interval": "Scan Interval (seconds)",
           "add_custom": "Add custom cryptocurrency"
         }
       },
@@ -24,6 +22,14 @@
         "data": {
           "symbol": "Cryptocurrency Symbol"
         }
+      },
+      "coin_amounts": {
+        "title": "Enter Coin Amounts",
+        "description": "Specify the amount of each cryptocurrency you own",
+        "data": {
+          "currency": "Currency",
+          "scan_interval": "Scan Interval (seconds)"
+        }
       }
     },
     "error": {
@@ -31,7 +37,8 @@
       "invalid_auth": "Invalid API key",
       "invalid_cryptocurrency": "Invalid cryptocurrency symbol",
       "no_cryptocurrencies": "Please select at least one cryptocurrency",
-      "unknown": "An unexpected error occurred"
+      "unknown": "An unexpected error occurred",
+      "invalid_input": "Invalid input. Please check all fields."
     },
     "abort": {
       "already_configured": "CoinMarketCap is already configured"
@@ -44,8 +51,6 @@
         "description": "Update your CoinMarketCap settings",
         "data": {
           "cryptocurrencies": "Cryptocurrencies",
-          "currency": "Currency",
-          "scan_interval": "Scan Interval (seconds)",
           "add_custom": "Add custom cryptocurrency"
         }
       },
@@ -55,13 +60,22 @@
         "data": {
           "symbol": "Cryptocurrency Symbol"
         }
+      },
+      "coin_amounts": {
+        "title": "Update Coin Amounts",
+        "description": "Update the amount of each cryptocurrency you own",
+        "data": {
+          "currency": "Currency",
+          "scan_interval": "Scan Interval (seconds)"
+        }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to CoinMarketCap API",
       "invalid_cryptocurrency": "Invalid cryptocurrency symbol",
       "no_cryptocurrencies": "Please select at least one cryptocurrency",
-      "unknown": "An unexpected error occurred"
+      "unknown": "An unexpected error occurred",
+      "invalid_input": "Invalid input. Please check all fields."
     }
   }
 }

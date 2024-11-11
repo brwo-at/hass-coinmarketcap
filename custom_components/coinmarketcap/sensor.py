@@ -9,7 +9,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_API_KEY, CONF_CRYPTOCURRENCIES, CONF_CURRENCY, CONF_SCAN_INTERVAL
+from .const import DOMAIN, CONF_API_KEY, CONF_CRYPTOCURRENCIES, CONF_CURRENCY, CONF_SCAN_INTERVAL, CONF_COIN_AMOUNT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,12 +19,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     cryptocurrencies = entry.data[CONF_CRYPTOCURRENCIES]
     currency = entry.data[CONF_CURRENCY]
     scan_interval = timedelta(seconds=entry.data[CONF_SCAN_INTERVAL])
+    coin_amounts = entry.data.get(CONF_COIN_AMOUNT, {})
 
     coordinator = CoinMarketCapDataUpdateCoordinator(hass, api_key, cryptocurrencies, currency, scan_interval)
     await coordinator.async_config_entry_first_refresh()
 
     async_add_entities(
-        CoinMarketCapSensor(coordinator, crypto)
+        CoinMarketCapSensor(coordinator, crypto, coin_amounts.get(crypto, 0))
         for crypto in cryptocurrencies
     )
 
@@ -67,25 +68,29 @@ class CoinMarketCapDataUpdateCoordinator(DataUpdateCoordinator):
 class CoinMarketCapSensor(SensorEntity):
     """Representation of a CoinMarketCap sensor."""
 
-    def __init__(self, coordinator, cryptocurrency):
+    def __init__(self, coordinator, cryptocurrency, amount):
         """Initialize the sensor."""
         self.coordinator = coordinator
         self.cryptocurrency = cryptocurrency
+        self.amount = float(amount)
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{self.cryptocurrency} Price"
+        return f"{self.cryptocurrency} Value"
 
     @property
     def unique_id(self):
         """Return a unique ID to use for this sensor."""
-        return f"{DOMAIN}_{self.cryptocurrency}_{self.coordinator.currency}"
+        return f"{DOMAIN}_{self.cryptocurrency}_value_{self.coordinator.currency}"
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data.get(self.cryptocurrency)
+        price = self.coordinator.data.get(self.cryptocurrency)
+        if price is not None:
+            return round(price * self.amount, 2)
+        return None
 
     @property
     def unit_of_measurement(self):
@@ -96,6 +101,15 @@ class CoinMarketCapSensor(SensorEntity):
     def icon(self):
         """Return the icon to use in the frontend."""
         return "mdi:currency-usd"
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes of the sensor."""
+        return {
+            "cryptocurrency": self.cryptocurrency,
+            "amount": self.amount,
+            "price": self.coordinator.data.get(self.cryptocurrency),
+        }
 
     @property
     def available(self):
