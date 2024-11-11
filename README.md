@@ -1,56 +1,69 @@
 # CoinMarketCap Integration for Home Assistant
 
-This custom integration allows you to track cryptocurrency prices and your portfolio value using the CoinMarketCap API in Home Assistant.
+This custom integration allows you to track cryptocurrency prices from CoinMarketCap in your Home Assistant instance.
 
 ## Features
 
-- Track prices of multiple cryptocurrencies
-- Set custom amounts for each cryptocurrency to calculate portfolio value
-- Configurable update interval
-- Support for custom/unlisted cryptocurrencies
+- Track multiple cryptocurrencies
+- Customizable update interval
+- Support for different fiat currencies
+- Calculate total value based on owned coin amounts
+- Add custom cryptocurrencies not in the predefined list
 
 ## Installation
 
-1. Copy the `coinmarketcap` folder to your `custom_components` directory in your Home Assistant configuration directory.
-   - If you don't have a `custom_components` directory, you'll need to create one.
+### Option 1: HACS (Recommended)
+
+1. Make sure you have [HACS](https://hacs.xyz/) installed in your Home Assistant instance.
+2. Add this repository to HACS:
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=brwo-at&repository=hass-coinmarketcap&category=integration)
+3. Search for "CoinMarketCap" in the Integrations tab of HACS and install it.
+4. Restart Home Assistant.
+
+### Option 2: Manual Installation
+
+1. Copy the `coinmarketcap` folder from this repository to your `config/custom_components` directory.
 2. Restart Home Assistant.
 
 ## Configuration
 
-1. In the Home Assistant UI, go to "Configuration" -> "Integrations".
+1. In Home Assistant, go to Configuration -> Integrations.
 2. Click the "+" button to add a new integration.
 3. Search for "CoinMarketCap" and select it.
 4. Follow the configuration steps:
-   - Enter your CoinMarketCap API key.
-   - Select the cryptocurrencies you want to track.
-   - (Optional) Add custom cryptocurrencies.
-   - Enter the amounts of each cryptocurrency you own.
-   - Choose your preferred currency and update interval.
+   - Enter your CoinMarketCap API key
+   - Select the cryptocurrencies you want to track
+   - Enter the amounts of each cryptocurrency you own (optional)
+   - Choose your preferred fiat currency
+   - Set the update interval
 
-## Usage
+## API Key
 
-After configuration, the integration will create sensors for each tracked cryptocurrency. The sensor state will represent the current value of your holdings in the selected currency.
+This integration requires a CoinMarketCap API key. You can obtain one for free at [https://coinmarketcap.com/api/](https://coinmarketcap.com/api/).
 
-Sensor attributes include:
-- `cryptocurrency`: The symbol of the cryptocurrency
-- `amount`: The amount of the cryptocurrency you own
-- `price`: The current price of the cryptocurrency
+Please note that the free API has usage limits. Check CoinMarketCap's documentation for details.
 
-## Troubleshooting
+## Sensors
 
-If you encounter any issues:
-1. Check the Home Assistant logs for any error messages related to the CoinMarketCap integration.
-2. Ensure your CoinMarketCap API key is valid and has the necessary permissions.
-3. Verify that your network allows connections to the CoinMarketCap API.
+For each configured cryptocurrency, the integration will create a sensor with the following attributes:
+- State: Current value of your holdings in the selected fiat currency
+- Attributes:
+  - `cryptocurrency`: Symbol of the cryptocurrency
+  - `amount`: Amount of the cryptocurrency you own
+  - `price`: Current price of the cryptocurrency in the selected fiat currency
 
-## Contributing
+## Localization
 
-Contributions to improve the integration are welcome. Please feel free to submit pull requests or open issues on the GitHub repository.
+This integration supports both English and German languages. The language will be automatically selected based on your Home Assistant configuration.
+
+## Support
+
+If you encounter any issues or have suggestions for improvements, please open an issue on the [GitHub repository](https://github.com/brwo-at/hass-coinmarketcap/issues).
 
 ## Disclaimer
 
-This integration is not officially affiliated with CoinMarketCap. Use at your own risk. Cryptocurrency prices can be volatile, and this integration should not be used as financial advice.
+This integration is not officially associated with CoinMarketCap. Use at your own risk.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
