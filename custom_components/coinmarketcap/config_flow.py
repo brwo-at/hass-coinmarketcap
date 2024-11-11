@@ -4,6 +4,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import logging
+from decimal import Decimal, InvalidOperation
 
 from .const import (
     DOMAIN,
@@ -13,6 +14,7 @@ from .const import (
     CONF_SCAN_INTERVAL,
     CONF_COIN_AMOUNT,
     DEFAULT_SCAN_INTERVAL,
+    TOP_CRYPTOCURRENCIES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -71,10 +73,9 @@ class CoinMarketCapConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 else:
                     errors["base"] = "no_cryptocurrencies"
 
-        # Fetch top cryptocurrencies
         try:
             top_cryptos = await fetch_top_cryptocurrencies(self.hass, self.api_key)
-            all_cryptocurrencies = {crypto: crypto for crypto in top_cryptos}
+            all_cryptocurrencies = {**{crypto: crypto for crypto in top_cryptos}, **TOP_CRYPTOCURRENCIES}
             all_cryptocurrencies.update({crypto: crypto for crypto in self.cryptocurrencies if crypto not in all_cryptocurrencies})
 
             return self.async_show_form(
@@ -88,6 +89,14 @@ class CoinMarketCapConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except Exception as e:
             _LOGGER.error(f"Failed to fetch top cryptocurrencies: {e}")
             errors["base"] = "cannot_connect"
+            return self.async_show_form(
+                step_id="select_cryptocurrencies",
+                data_schema=vol.Schema({
+                    vol.Optional(CONF_CRYPTOCURRENCIES, default=list(self.cryptocurrencies)): cv.multi_select(TOP_CRYPTOCURRENCIES),
+                    vol.Optional("add_custom"): bool,
+                }),
+                errors=errors,
+            )
 
     async def async_step_add_cryptocurrency(self, user_input=None):
         errors = {}
@@ -130,7 +139,7 @@ class CoinMarketCapConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 for crypto in self.cryptocurrencies:
                     amount_key = f"amount_{crypto}"
                     if amount_key in user_input:
-                        coin_amounts[crypto] = str(float(user_input[amount_key]))
+                        coin_amounts[crypto] = str(Decimal(str(user_input[amount_key])))
 
                 return self.async_create_entry(
                     title="CoinMarketCap",
@@ -142,8 +151,7 @@ class CoinMarketCapConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_COIN_AMOUNT: coin_amounts,
                     },
                 )
-            except ValueError as e:
-                _LOGGER.error(f"Error processing input: {str(e)}")
+            except InvalidOperation:
                 errors["base"] = "invalid_input"
             except Exception as e:
                 _LOGGER.exception(f"Unexpected error occurred: {str(e)}")
@@ -151,11 +159,11 @@ class CoinMarketCapConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema = {
             vol.Required(CONF_CURRENCY, default="USD"): str,
-            vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL.total_seconds()): int,
+            vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): int,
         }
         
         for crypto in self.cryptocurrencies:
-            data_schema[vol.Optional(f"amount_{crypto}", default=0.0)] = str
+            data_schema[vol.Optional(f"amount_{crypto}", default=0.0)] = vol.Coerce(float)
 
         return self.async_show_form(
             step_id="coin_amounts",
@@ -172,6 +180,7 @@ class CoinMarketCapOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         self.config_entry = config_entry
         self.cryptocurrencies = set(config_entry.data[CONF_CRYPTOCURRENCIES])
+        self.coin_amounts = config_entry.data.get(CONF_COIN_AMOUNT, {})
         
     async def async_step_init(self, user_input=None):
         errors = {}
@@ -183,10 +192,10 @@ class CoinMarketCapOptionsFlow(config_entries.OptionsFlow):
                 self.cryptocurrencies = set(user_input.get(CONF_CRYPTOCURRENCIES, []))
                 return await self.async_step_coin_amounts()
 
-        # Fetch top cryptocurrencies
         try:
-            top_cryptos = await fetch_top_cryptocurrencies(self.config_entry.data[CONF_API_KEY])
-            all_cryptocurrencies = {crypto: crypto for crypto in top_cryptos}
+            top_cryptos = await fetch_top_cryptocurrencies(self.hass, self.config_entry.data[CONF_API_KEY])
+            all_cryptocurrencies = {**{crypto: crypto for crypto in top_cryptos}, **TOP_CRYPTOCURRENCIES}
+            all_cryptocurrencies.update({crypto: crypto for crypto in self.cryptocurrencies if crypto not in all_cryptocurrencies})
             
             return self.async_show_form(
                 step_id="init",
@@ -199,6 +208,14 @@ class CoinMarketCapOptionsFlow(config_entries.OptionsFlow):
         except Exception as e:
             _LOGGER.error(f"Failed to fetch top cryptocurrencies: {e}")
             errors["base"] = "cannot_connect"
+            return self.async_show_form(
+                step_id="init",
+                data_schema=vol.Schema({
+                    vol.Optional(CONF_CRYPTOCURRENCIES, default=list(self.cryptocurrencies)): cv.multi_select(TOP_CRYPTOCURRENCIES),
+                    vol.Optional("add_custom"): bool,
+                }),
+                errors=errors,
+            )
 
     async def async_step_add_cryptocurrency(self, user_input=None):
         errors = {}
@@ -232,5 +249,45 @@ class CoinMarketCapOptionsFlow(config_entries.OptionsFlow):
             data_schema=vol.Schema({
                 vol.Required("symbol"): str,
             }),
+            errors=errors,
+        )
+
+    async def async_step_coin_amounts(self, user_input=None):
+        errors = {}
+
+        if user_input is not None:
+            try:
+                coin_amounts = {}
+                for crypto in self.cryptocurrencies:
+                    amount_key = f"amount_{crypto}"
+                    if amount_key in user_input:
+                        coin_amounts[crypto] = str(Decimal(str(user_input[amount_key])))
+
+                new_data = {
+                    **self.config_entry.data,
+                    CONF_CRYPTOCURRENCIES: list(self.cryptocurrencies),
+                    CONF_COIN_AMOUNT: coin_amounts,
+                    CONF_CURRENCY: user_input[CONF_CURRENCY],
+                    CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
+                }
+                self.hass.config_entries.async_update_entry(self.config_entry, data=new_data)
+                return self.async_create_entry(title="", data={})
+            except InvalidOperation:
+                errors["base"] = "invalid_input"
+            except Exception as e:
+                _LOGGER.exception(f"Error in options async_step_coin_amounts: {str(e)}")
+                errors["base"] = "unknown"
+
+        data_schema = {
+            vol.Required(CONF_CURRENCY, default=self.config_entry.data.get(CONF_CURRENCY, "USD")): str,
+            vol.Required(CONF_SCAN_INTERVAL, default=self.config_entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)): int,
+        }
+        
+        for crypto in self.cryptocurrencies:
+            data_schema[vol.Optional(f"amount_{crypto}", default=float(self.coin_amounts.get(crypto, 0)))] = vol.Coerce(float)
+
+        return self.async_show_form(
+            step_id="coin_amounts",
+            data_schema=vol.Schema(data_schema),
             errors=errors,
         )

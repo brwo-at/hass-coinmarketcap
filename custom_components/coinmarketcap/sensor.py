@@ -1,6 +1,8 @@
 """Support for CoinMarketCap sensors."""
+
 from datetime import timedelta
 import logging
+from decimal import Decimal
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -38,7 +40,6 @@ class CoinMarketCapDataUpdateCoordinator(DataUpdateCoordinator):
         self.cryptocurrencies = cryptocurrencies
         self.currency = currency
         self.session = async_get_clientsession(hass)
-
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
     async def _async_update_data(self):
@@ -47,21 +48,21 @@ class CoinMarketCapDataUpdateCoordinator(DataUpdateCoordinator):
             url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
             params = {
                 "symbol": ",".join(self.cryptocurrencies),
-                "convert": self.currency
+                "convert": self.currency,
             }
             headers = {
-                "X-CMC_PRO_API_KEY": self.api_key
+                "X-CMC_PRO_API_KEY": self.api_key,
             }
 
             async with self.session.get(url, params=params, headers=headers) as response:
                 if response.status != 200:
                     raise UpdateFailed(f"Error communicating with CoinMarketCap: {response.status}")
-                data = await response.json()
 
-            return {
-                symbol: data["data"][symbol]["quote"][self.currency]["price"]
-                for symbol in self.cryptocurrencies
-            }
+                data = await response.json()
+                return {
+                    symbol: data["data"][symbol]["quote"][self.currency]["price"]
+                    for symbol in self.cryptocurrencies
+                }
         except Exception as err:
             raise UpdateFailed(f"Error communicating with CoinMarketCap: {err}")
 
@@ -72,7 +73,7 @@ class CoinMarketCapSensor(SensorEntity):
         """Initialize the sensor."""
         self.coordinator = coordinator
         self.cryptocurrency = cryptocurrency
-        self.amount = float(amount)
+        self.amount = Decimal(str(amount))  # Convert to Decimal for precision
 
     @property
     def name(self):
@@ -88,8 +89,12 @@ class CoinMarketCapSensor(SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         price = self.coordinator.data.get(self.cryptocurrency)
+        
         if price is not None:
-            return round(price * self.amount, 2)
+            # Use Decimal for precise calculation
+            total_value = Decimal(str(price)) * self.amount
+            return round(float(total_value), 2)
+        
         return None
 
     @property
@@ -107,7 +112,7 @@ class CoinMarketCapSensor(SensorEntity):
         """Return the state attributes of the sensor."""
         return {
             "cryptocurrency": self.cryptocurrency,
-            "amount": self.amount,
+            "amount": str(self.amount),  # Convert Decimal to string to preserve all decimal places
             "price": self.coordinator.data.get(self.cryptocurrency),
         }
 
