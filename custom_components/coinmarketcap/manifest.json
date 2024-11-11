@@ -3,6 +3,7 @@
   "name": "CoinMarketCap",
   "config_flow": true,
   "documentation": "https://github.com/brwo-at/hass-coinmarketcap",
+  "issue_tracker": "https://github.com/IHR_BENUTZERNAME/coinmarketcap/issues",
   "requirements": [],
   "ssdp": [],
   "zeroconf": [],
