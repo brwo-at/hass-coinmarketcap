@@ -1,0 +1,67 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "CoinMarketCap API-Schlüssel",
+        "description": "Geben Sie Ihren CoinMarketCap API-Schlüssel ein",
+        "data": {
+          "api_key": "API-Schlüssel"
+        }
+      },
+      "select_cryptocurrencies": {
+        "title": "Kryptowährungen auswählen",
+        "description": "Wählen Sie die Kryptowährungen aus, die Sie verfolgen möchten",
+        "data": {
+          "cryptocurrencies": "Kryptowährungen",
+          "currency": "Währung",
+          "scan_interval": "Aktualisierungsintervall (Sekunden)",
+          "add_custom": "Benutzerdefinierte Kryptowährung hinzufügen"
+        }
+      },
+      "add_cryptocurrency": {
+        "title": "Benutzerdefinierte Kryptowährung hinzufügen",
+        "description": "Geben Sie das Symbol der Kryptowährung ein, die Sie hinzufügen möchten",
+        "data": {
+          "symbol": "Kryptowährungssymbol"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur CoinMarketCap API fehlgeschlagen",
+      "invalid_auth": "Ungültiger API-Schlüssel",
+      "invalid_cryptocurrency": "Ungültiges Kryptowährungssymbol",
+      "no_cryptocurrencies": "Bitte wählen Sie mindestens eine Kryptowährung aus",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten"
+    },
+    "abort": {
+      "already_configured": "CoinMarketCap ist bereits konfiguriert"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CoinMarketCap Optionen",
+        "description": "Aktualisieren Sie Ihre CoinMarketCap-Einstellungen",
+        "data": {
+          "cryptocurrencies": "Kryptowährungen",
+          "currency": "Währung",
+          "scan_interval": "Aktualisierungsintervall (Sekunden)",
+          "add_custom": "Benutzerdefinierte Kryptowährung hinzufügen"
+        }
+      },
+      "add_cryptocurrency": {
+        "title": "Benutzerdefinierte Kryptowährung hinzufügen",
+        "description": "Geben Sie das Symbol der Kryptowährung ein, die Sie hinzufügen möchten",
+        "data": {
+          "symbol": "Kryptowährungssymbol"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur CoinMarketCap API fehlgeschlagen",
+      "invalid_cryptocurrency": "Ungültiges Kryptowährungssymbol",
+      "no_cryptocurrencies": "Bitte wählen Sie mindestens eine Kryptowährung aus",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten"
+    }
+  }
+}

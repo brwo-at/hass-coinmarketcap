@@ -1,0 +1,67 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "CoinMarketCap API Key",
+        "description": "Enter your CoinMarketCap API key",
+        "data": {
+          "api_key": "API Key"
+        }
+      },
+      "select_cryptocurrencies": {
+        "title": "Select Cryptocurrencies",
+        "description": "Choose the cryptocurrencies you want to track",
+        "data": {
+          "cryptocurrencies": "Cryptocurrencies",
+          "currency": "Currency",
+          "scan_interval": "Scan Interval (seconds)",
+          "add_custom": "Add custom cryptocurrency"
+        }
+      },
+      "add_cryptocurrency": {
+        "title": "Add Custom Cryptocurrency",
+        "description": "Enter the symbol of the cryptocurrency you want to add",
+        "data": {
+          "symbol": "Cryptocurrency Symbol"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to CoinMarketCap API",
+      "invalid_auth": "Invalid API key",
+      "invalid_cryptocurrency": "Invalid cryptocurrency symbol",
+      "no_cryptocurrencies": "Please select at least one cryptocurrency",
+      "unknown": "An unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "CoinMarketCap is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CoinMarketCap Options",
+        "description": "Update your CoinMarketCap settings",
+        "data": {
+          "cryptocurrencies": "Cryptocurrencies",
+          "currency": "Currency",
+          "scan_interval": "Scan Interval (seconds)",
+          "add_custom": "Add custom cryptocurrency"
+        }
+      },
+      "add_cryptocurrency": {
+        "title": "Add Custom Cryptocurrency",
+        "description": "Enter the symbol of the cryptocurrency you want to add",
+        "data": {
+          "symbol": "Cryptocurrency Symbol"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to CoinMarketCap API",
+      "invalid_cryptocurrency": "Invalid cryptocurrency symbol",
+      "no_cryptocurrencies": "Please select at least one cryptocurrency",
+      "unknown": "An unexpected error occurred"
+    }
+  }
+}
