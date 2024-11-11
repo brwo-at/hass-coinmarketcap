@@ -13,6 +13,6 @@
     "@brwo-at"
   ],
   "iot_class": "cloud_polling",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "icon": "mdi:currency-btc"
 }
